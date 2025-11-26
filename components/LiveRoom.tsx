@@ -10,11 +10,10 @@ interface Props {
 const LiveRoom: React.FC<Props> = ({ property, onClose, onFinish }) => {
   const [bids, setBids] = useState<Bid[]>([]);
   const [currentPrice, setCurrentPrice] = useState(property.startingPrice);
-  const [timeLeft, setTimeLeft] = useState(600); // 10 minutes demo
+  const [timeLeft, setTimeLeft] = useState(600);
   const [userRolePopup, setUserRolePopup] = useState<'OWNER' | 'BUYER' | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Mock initial bids
   useEffect(() => {
     const initialBids = [
       { id: '1', userId: 'u1', userName: 'User8823', amount: property.startingPrice, timestamp: Date.now() },
@@ -24,14 +23,12 @@ const LiveRoom: React.FC<Props> = ({ property, onClose, onFinish }) => {
     setCurrentPrice(property.startingPrice + 2);
   }, []);
 
-  // Auto-scroll bids
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [bids]);
 
-  // Simulate incoming bids & Popups (The "Three Grips" from PDF)
   useEffect(() => {
     const interval = setInterval(() => {
       if (Math.random() > 0.7) {
@@ -49,7 +46,6 @@ const LiveRoom: React.FC<Props> = ({ property, onClose, onFinish }) => {
       }
     }, 2000);
 
-    // Trigger "Buyer Grip" popup after 5 seconds (Simulating user not bidding)
     const buyerPopupTimer = setTimeout(() => {
         setUserRolePopup('BUYER');
     }, 5000);
@@ -73,107 +69,119 @@ const LiveRoom: React.FC<Props> = ({ property, onClose, onFinish }) => {
     };
     setBids(prev => [...prev, newBid]);
     setCurrentPrice(newPrice);
-    
-    // Close popups if I bid
     setUserRolePopup(null);
   };
 
   return (
-    <div className="fixed inset-0 bg-black z-50 flex flex-col">
-      {/* 1. Live Stream Area (Top Half) */}
-      <div className="relative h-[45vh] bg-gray-900 overflow-hidden">
-         {/* Simulated Video Feed */}
-         <img src={property.image} className="w-full h-full object-cover opacity-80" />
-         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/80"></div>
+    <div className="fixed inset-0 bg-black z-50 flex flex-col font-sans">
+      {/* 1. Live Stream Area */}
+      <div className="relative h-[45vh] bg-gray-950 overflow-hidden">
+         <img src={property.image} className="w-full h-full object-cover opacity-60" />
+         {/* Subtle gradient for text visibility */}
+         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/80"></div>
          
-         {/* Host Overlay */}
-         <div className="absolute top-4 left-4 flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full border-2 border-brand-500 overflow-hidden">
+         {/* Glass Host Card */}
+         <div className="absolute top-6 left-4 flex items-center gap-3 bg-black/40 backdrop-blur-md rounded-full pr-4 pl-1 py-1 border border-white/10">
+            <div className="w-8 h-8 rounded-full border border-white/50 overflow-hidden">
                 <img src="https://ui-avatars.com/api/?name=Host&background=FF4D00&color=fff" />
             </div>
             <div>
-                <div className="text-xs font-bold text-white">金牌拍卖师</div>
-                <div className="flex items-center gap-1">
+                <div className="text-[10px] font-bold text-white tracking-wide">金牌拍卖师</div>
+                <div className="flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
-                    <span className="text-[10px] text-gray-300">LIVE | 12,304人围观</span>
+                    <span className="text-[9px] text-white/80 font-medium">12k+ 围观</span>
                 </div>
             </div>
          </div>
 
-         {/* Auction Timer & Stats */}
-         <div className="absolute top-4 right-4 flex flex-col items-end">
-             <div className="bg-black/40 backdrop-blur px-3 py-1 rounded-lg border border-white/10 text-center mb-2">
-                 <div className="text-[10px] text-gray-400">距离截拍</div>
-                 <div className="font-mono font-bold text-red-500">00:{Math.floor(timeLeft / 60)}:{timeLeft % 60}</div>
+         {/* Timer Capsule */}
+         <div className="absolute top-6 right-4 flex flex-col items-end gap-2">
+             <div className="bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 text-center shadow-lg">
+                 <div className="text-[9px] text-white/60 font-bold uppercase tracking-wider">Time Left</div>
+                 <div className="font-mono font-bold text-white tabular-nums">00:{Math.floor(timeLeft / 60)}:{timeLeft % 60}</div>
              </div>
-             {/* "Data Grip" from PDF */}
-             <div className="bg-brand-600/90 text-white text-[10px] px-2 py-1 rounded animate-bounce">
-                当前已有 18 人缴纳保证金
+             
+             <div className="bg-brand-500 text-white text-[10px] font-bold px-3 py-1.5 rounded-full shadow-lg shadow-brand-500/20 animate-bounce">
+                18人已交保
              </div>
          </div>
          
-         {/* Tools Overlay */}
-         <div className="absolute bottom-4 right-4 flex flex-col gap-2">
-            <button className="w-10 h-10 rounded-full bg-black/40 backdrop-blur border border-white/20 flex items-center justify-center text-xl">🧮</button>
-            <button className="w-10 h-10 rounded-full bg-black/40 backdrop-blur border border-white/20 flex items-center justify-center text-xl">📊</button>
+         {/* Floating Glass Tools */}
+         <div className="absolute bottom-6 right-4 flex flex-col gap-3">
+            <button className="w-11 h-11 rounded-full bg-black/40 backdrop-blur-xl border border-white/20 flex items-center justify-center text-xl shadow-lg active:scale-90 transition hover:bg-black/60">🧮</button>
+            <button className="w-11 h-11 rounded-full bg-black/40 backdrop-blur-xl border border-white/20 flex items-center justify-center text-xl shadow-lg active:scale-90 transition hover:bg-black/60">📊</button>
          </div>
 
-         <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 opacity-0">X</button>
+         <button onClick={onClose} className="absolute top-6 right-4 w-8 h-8 opacity-0">X</button>
       </div>
 
-      {/* 2. Interactive Area (Bottom Half) */}
-      <div className="flex-1 bg-dark-900 rounded-t-3xl -mt-6 relative z-10 flex flex-col overflow-hidden border-t border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.8)]">
-          {/* Current Price Header */}
-          <div className="p-4 border-b border-white/5 flex justify-between items-center bg-dark-800">
+      {/* 2. Interactive Sheet (Dark) */}
+      <div className="flex-1 bg-gray-900 rounded-t-[2.5rem] -mt-8 relative z-10 flex flex-col overflow-hidden shadow-[0_-10px_50px_rgba(0,0,0,0.8)] border-t border-white/5">
+          {/* Header */}
+          <div className="p-6 border-b border-gray-800 flex justify-between items-center bg-gray-900/90 backdrop-blur">
              <div>
-                <div className="text-gray-400 text-xs">当前最高价 (Current Bid)</div>
-                <div className="text-3xl font-black text-brand-500 tracking-tight">
-                    {currentPrice} <span className="text-sm">万</span>
+                <div className="text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">当前最高价 Current Bid</div>
+                <div className="text-4xl font-black text-brand-500 tracking-tighter leading-none">
+                    {currentPrice} <span className="text-lg">万</span>
                 </div>
              </div>
              <div className="text-right">
-                <div className="text-gray-500 text-xs line-through">市场价 {property.marketPrice}万</div>
-                <div className="text-green-500 text-xs font-bold">溢价率 {(currentPrice/property.startingPrice * 100 - 100).toFixed(1)}%</div>
+                <div className="text-gray-500 text-xs font-medium line-through decoration-gray-600">市场价 {property.marketPrice}万</div>
+                <div className="text-green-400 text-xs font-bold bg-green-900/30 px-2 py-0.5 rounded-full mt-1 border border-green-500/20">
+                   溢价率 {(currentPrice/property.startingPrice * 100 - 100).toFixed(1)}%
+                </div>
              </div>
           </div>
 
           {/* Bid Stream */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 relative" ref={scrollRef}>
-             <div className="text-center text-xs text-gray-600 my-4">--- 拍卖已开始 (Auction Started) ---</div>
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 relative bg-gray-900" ref={scrollRef}>
+             <div className="flex justify-center">
+                 <span className="bg-gray-800 text-gray-400 text-[10px] font-bold px-3 py-1 rounded-full border border-white/5">拍卖已开始 Auction Started</span>
+             </div>
+             
              {bids.map((bid) => (
                  <div key={bid.id} className={`flex ${bid.isMe ? 'justify-end' : 'justify-start'} animate-slide-up`}>
-                     <div className={`max-w-[80%] rounded-2xl px-4 py-2 ${bid.isMe ? 'bg-brand-600 text-white' : 'bg-dark-700 text-gray-200'}`}>
-                         <div className="text-[10px] opacity-70 mb-0.5 flex justify-between gap-4">
+                     <div className={`max-w-[85%] rounded-2xl px-5 py-3 shadow-sm border border-white/5 ${
+                         bid.isMe 
+                         ? 'bg-brand-600 text-white rounded-br-none border-brand-500' 
+                         : 'bg-gray-800 text-white rounded-bl-none'
+                     }`}>
+                         <div className={`text-[10px] font-bold mb-1 flex justify-between gap-6 ${bid.isMe ? 'text-white/70' : 'text-gray-400'}`}>
                             <span>{bid.userName}</span>
                             <span>{new Date(bid.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'})}</span>
                          </div>
-                         <div className="font-bold flex items-center gap-1">
-                            出价 <span className="text-lg">{bid.amount}万</span>
-                            {bid.amount >= currentPrice && !bid.isMe && <span className="bg-red-500 text-[10px] px-1 rounded ml-1">领先</span>}
+                         <div className="font-bold flex items-center gap-2 text-sm">
+                            出价 <span className="text-lg font-black">{bid.amount}万</span>
+                            {bid.amount >= currentPrice && !bid.isMe && <span className="bg-red-600 text-white text-[9px] px-1.5 py-0.5 rounded shadow-sm">领先</span>}
                          </div>
                      </div>
                  </div>
              ))}
              
-             {/* Dynamic Grips / Popups based on PDF logic */}
+             {/* Notification Card */}
              {userRolePopup === 'BUYER' && (
-                 <div className="bg-gray-800/90 backdrop-blur border border-gray-600 p-3 rounded-xl mx-4 my-2 animate-pulse border-l-4 border-l-yellow-500 relative">
-                     <button onClick={() => setUserRolePopup(null)} className="absolute top-1 right-2 text-gray-400">×</button>
-                     <div className="text-yellow-500 font-bold text-sm mb-1">💡 觉得价格太高？</div>
-                     <div className="text-xs text-white">为您推荐同小区高性价比房源，本场落选可直接带看。</div>
-                     <button className="mt-2 bg-white/10 text-xs px-3 py-1 rounded hover:bg-white/20 transition">预约下周提醒</button>
+                 <div className="bg-gray-800/90 backdrop-blur border border-yellow-500/30 shadow-xl p-4 rounded-2xl mx-2 my-2 animate-fade-in relative overflow-hidden">
+                     <div className="absolute top-0 left-0 w-1 h-full bg-yellow-500"></div>
+                     <button onClick={() => setUserRolePopup(null)} className="absolute top-2 right-3 text-gray-500 hover:text-gray-300">×</button>
+                     <div className="text-yellow-500 font-bold text-sm mb-1 flex items-center gap-2">
+                        <span className="bg-yellow-900/40 p-1 rounded-full text-xs">💡</span> 觉得价格太高？
+                     </div>
+                     <div className="text-xs text-gray-400 mb-3 pl-7">为您推荐同小区高性价比房源，本场落选可直接带看。</div>
+                     <div className="pl-7">
+                        <button className="bg-white text-black text-xs font-bold px-4 py-2 rounded-lg hover:bg-gray-200 transition">预约下周提醒</button>
+                     </div>
                  </div>
              )}
           </div>
 
-          {/* Bidding Control */}
-          <div className="p-4 pb-8 bg-dark-800 border-t border-white/5">
+          {/* Bottom Controls */}
+          <div className="p-4 pb-8 bg-gray-900 border-t border-gray-800 shadow-[0_-5px_20px_rgba(0,0,0,0.2)]">
               <div className="flex gap-3 mb-3">
                   {[1, 2, 5].map(step => (
                       <button 
                         key={step} 
-                        className="flex-1 bg-dark-700 hover:bg-dark-600 border border-white/10 py-2 rounded-lg text-sm font-medium transition"
-                        onClick={() => setCurrentPrice(currentPrice + step)} // Just visually preview
+                        className="flex-1 bg-gray-800 hover:bg-gray-700 border border-gray-700 py-2.5 rounded-xl text-sm font-bold text-gray-300 transition active:scale-95"
+                        onClick={() => setCurrentPrice(currentPrice + step)}
                       >
                         +{step}万
                       </button>
@@ -181,19 +189,17 @@ const LiveRoom: React.FC<Props> = ({ property, onClose, onFinish }) => {
               </div>
               <button 
                 onClick={handleMyBid}
-                className="w-full bg-gradient-to-r from-brand-500 to-red-600 py-4 rounded-xl text-xl font-black text-white shadow-[0_0_20px_rgba(255,77,0,0.4)] hover:shadow-[0_0_30px_rgba(255,77,0,0.6)] active:scale-95 transition-all relative overflow-hidden group"
+                className="w-full bg-white text-black py-4 rounded-xl text-lg font-black shadow-glow hover:bg-gray-100 active:scale-95 transition-all relative overflow-hidden group"
               >
-                  <span className="relative z-10">立即出价 (BID)</span>
-                  <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                  <span className="relative z-10">立即出价 BID</span>
               </button>
-              <div className="text-center mt-2 text-[10px] text-gray-500">
+              <div className="text-center mt-3 text-[10px] text-gray-600 font-medium">
                   出价即代表同意《拍卖成交确认书》
               </div>
           </div>
       </div>
       
-      {/* End Auction Simulation Button (Hidden for demo) */}
-      <button onClick={onFinish} className="fixed top-20 right-4 bg-white/10 text-xs px-2 py-1 rounded">End Demo</button>
+      <button onClick={onFinish} className="fixed top-24 right-4 bg-black/40 backdrop-blur text-white/50 text-[10px] px-2 py-1 rounded border border-white/5">End Demo</button>
     </div>
   );
 };
